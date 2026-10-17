@@ -1,0 +1,404 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>NEXORA Hub</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* layout: เมนูลอยบนสุด + 3 หน้า (หน้าแรก/สคริปต์/แมพ) สลับด้วย #hash, แผงแอดมินเลื่อนจากขวา */
+:root{--bg:#06060a;--card:#0d0d16;--line:#24243a;--text:#f3f3f7;--mut:#8b8ba6;--red:#ff1f4b;--blue:#3b6bff;--purple:#9b4dff;--ok:#5af0a0;color-scheme:dark}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:"Noto Sans Thai",system-ui,sans-serif;line-height:1.6;padding-block:0 70px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow-x:hidden;min-height:100vh}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:60}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;background:radial-gradient(600px circle at var(--cx,50%) var(--cy,20%),#9b4dff22,transparent 60%),radial-gradient(700px circle at 100% 0,#ff1f4b1c,transparent 55%),radial-gradient(700px circle at 0 100%,#3b6bff1c,transparent 55%),linear-gradient(#ffffff08 1px,transparent 1px) 0 0/44px 44px,linear-gradient(90deg,#ffffff08 1px,transparent 1px) 0 0/44px 44px}
+.wrap{max-width:1000px;margin:auto}
+a{color:inherit;text-decoration:none}
+nav{position:sticky;top:calc(env(safe-area-inset-top,0px) + 10px);z-index:50;display:flex;align-items:center;gap:10px;margin:10px auto 34px;max-width:1000px;padding:8px 10px 8px 16px;border:1px solid var(--line);border-radius:99px;background:#0a0a12cc;backdrop-filter:blur(14px)}
+.brand{font-weight:800;letter-spacing:.16em;font-size:15px;background:linear-gradient(90deg,var(--red),var(--purple),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap}
+.tabs{display:flex;gap:2px;margin-left:auto}
+.tabs a{font-size:14px;padding:7px 13px;border-radius:99px;color:var(--mut);transition:.2s}
+.tabs a.on{color:#fff;background:linear-gradient(90deg,#ff1f4b55,#9b4dff55)}
+.adm[hidden]{display:none}.adm{display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:#14141f;color:var(--text);border-radius:99px;padding:7px 13px;font-size:13px;cursor:pointer;font-family:inherit}
+.adm:hover{border-color:var(--purple)}
+h1{font-size:clamp(40px,11vw,86px);line-height:1.05;font-weight:800;margin-bottom:16px;position:relative;display:inline-block}
+h1 .g{background:linear-gradient(100deg,#fff 20%,var(--red) 55%,var(--purple) 80%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:flow 6s linear infinite}
+h1::before,h1::after{content:attr(data-t);position:absolute;left:0;top:0;width:100%;white-space:pre-line;opacity:.0;pointer-events:none}
+h1::before{color:var(--red);animation:gl1 5s infinite}h1::after{color:var(--blue);animation:gl2 5s infinite}
+@keyframes flow{to{background-position:-200% 0}}
+@keyframes gl1{0%,92%,100%{opacity:0}93%{opacity:.8;transform:translate(-4px,1px)}95%{opacity:.8;transform:translate(3px,-1px)}97%{opacity:0}}
+@keyframes gl2{0%,92%,100%{opacity:0}94%{opacity:.8;transform:translate(4px,-1px)}96%{opacity:.8;transform:translate(-3px,1px)}98%{opacity:0}}
+h2{font-size:clamp(26px,6vw,38px);margin-bottom:8px;line-height:1.2}
+h3{font-size:19px}
+.sub{color:var(--mut);margin-bottom:24px;max-width:560px}
+.eyebrow{display:flex;align-items:center;gap:12px;color:var(--mut);letter-spacing:.22em;font-size:12px;margin:46px 0 10px}
+.eyebrow::before{content:"";width:34px;height:1px;background:var(--purple)}
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:24px;align-items:center}
+.btns{display:grid;gap:12px;max-width:420px}
+.btn{position:relative;display:block;text-align:center;padding:15px 18px;border-radius:99px;border:1px solid var(--line);background:#11111b;color:var(--text);font-size:16px;font-family:inherit;cursor:pointer;transition:.2s;overflow:hidden}
+.btn:hover{border-color:var(--purple);transform:translateY(-2px)}
+.btn.main{border:0;font-weight:700;color:#fff;background:linear-gradient(100deg,var(--red),var(--purple),var(--blue));background-size:200% 100%;animation:flow 5s linear infinite;box-shadow:0 8px 34px #ff1f4b44}
+.btn.main::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 35%,#ffffff77 50%,transparent 65%);transform:translateX(-100%);animation:shine 3.2s infinite}
+@keyframes shine{60%,100%{transform:translateX(100%)}}
+.btn.sm{padding:9px 16px;font-size:14px;display:inline-block}
+.stat{display:flex;gap:30px;margin:26px 0 0}.stat b{display:block;font-size:36px;line-height:1.1;background:linear-gradient(var(--text),var(--mut));-webkit-background-clip:text;background-clip:text;color:transparent}.stat small{color:var(--mut)}
+.globe{display:block;width:100%;max-width:440px;aspect-ratio:1;margin:auto;touch-action:pan-y;cursor:grab;filter:drop-shadow(0 0 40px #9b4dff44)}
+.cap{display:flex;justify-content:space-between;color:var(--mut);font-size:13px;max-width:440px;margin:4px auto 0}
+.marq{overflow:hidden;border-block:1px solid var(--line);margin:40px -16px 0;padding:14px 0;mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+.marq div{display:flex;gap:12px;width:max-content;animation:mq 30s linear infinite}
+.marq span{border:1px solid var(--line);border-radius:99px;padding:6px 18px;white-space:nowrap;background:#0d0d16}
+.marq span::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok);margin-right:10px;box-shadow:0 0 10px var(--ok)}
+@keyframes mq{to{transform:translateX(-50%)}}
+.why{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.box{background:linear-gradient(160deg,#12121d,#0b0b13);border:1px solid var(--line);border-radius:24px;padding:22px;position:relative;overflow:hidden}
+.box p{color:var(--mut);font-size:15px;margin-top:4px}
+.box .ic{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;margin-bottom:14px;background:linear-gradient(135deg,#ff1f4b33,#3b6bff33);border:1px solid #ffffff1a;font-size:20px}
+code{display:block;font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#d6d6ee;word-break:break-all;margin:6px 0 18px;line-height:1.7}
+.term{border:1px solid var(--line);border-radius:26px;background:#0a0a11;overflow:hidden;box-shadow:0 0 0 1px #9b4dff22,0 20px 60px #0008}
+.term header{display:flex;gap:7px;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line);color:var(--mut);font-family:ui-monospace,monospace;font-size:13px}
+.term header i{width:11px;height:11px;border-radius:50%;background:#2e2e44}.term header i:nth-child(1){background:var(--red)}.term header i:nth-child(2){background:#f5b83d}.term header i:nth-child(3){background:var(--ok)}
+.term .bd{padding:22px 20px 20px}
+.steps{display:grid;gap:16px;margin-top:30px}
+.steps div{display:flex;gap:16px;align-items:flex-start}.steps i{font-style:normal;font-family:ui-monospace,monospace;color:var(--purple);border:1px solid var(--line);border-radius:12px;padding:3px 10px}.steps b{display:block}.steps span{color:var(--mut);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.mcard{--mx:50%;--my:50%;--h:300;position:relative;background:var(--card);border:1px solid var(--line);border-radius:24px;overflow:hidden;transition:transform .15s ease,border-color .3s,box-shadow .3s;animation:rise .6s cubic-bezier(.2,.7,.2,1) both}
+.mcard::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(240px circle at var(--mx) var(--my),hsl(var(--h) 95% 62%/.2),transparent 70%);opacity:0;transition:opacity .25s}
+.mcard:hover{border-color:hsl(var(--h) 80% 60%/.7);box-shadow:0 10px 40px hsl(var(--h) 90% 50%/.22)}.mcard:hover::after{opacity:1}
+@keyframes rise{from{transform:translateY(18px)}}
+.cover{position:relative;aspect-ratio:16/10;overflow:hidden;background:#000}
+.cover img{width:100%;height:100%;object-fit:cover;display:block}
+.art{width:100%;height:100%;display:grid;place-items:center;background:linear-gradient(135deg,hsl(var(--h) 75% 24%),hsl(var(--h2) 75% 10%),hsl(var(--h) 85% 30%));background-size:240% 240%;animation:drift 8s ease-in-out infinite alternate;position:relative}
+.art::before{content:"";position:absolute;inset:0;background:linear-gradient(#ffffff0d 1px,transparent 1px),linear-gradient(90deg,#ffffff0d 1px,transparent 1px);background-size:22px 22px}
+@keyframes drift{to{background-position:100% 100%}}
+.emb{width:30%;position:relative;filter:drop-shadow(0 0 14px hsl(var(--h) 100% 65%))}
+.live{position:absolute;left:10px;top:10px;display:flex;align-items:center;gap:7px;font-size:12px;background:#000b;backdrop-filter:blur(6px);border-radius:99px;padding:4px 11px;color:var(--ok)}
+.live i{width:7px;height:7px;border-radius:50%;background:currentColor;animation:pulse 1.6s infinite}
+.live.up{color:#f5b83d}.live.soon{color:var(--blue)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 currentColor}100%{box-shadow:0 0 0 8px #0000}}
+.info{padding:14px 16px 16px}.info b{display:block;margin-bottom:8px}
+.pid{display:flex;justify-content:space-between;align-items:center;gap:8px}.pid small{color:var(--mut)}
+.chip{font-family:ui-monospace,monospace;font-size:12px;color:var(--text);background:#ffffff0d;border:1px solid var(--line);border-radius:99px;padding:4px 10px;cursor:pointer}
+.empty{border:1px dashed var(--line);border-radius:22px;padding:30px;text-align:center;color:var(--mut)}
+/* admin */
+.shade{position:fixed;inset:0;background:#000a;z-index:80;backdrop-filter:blur(4px)}
+.sheet{position:fixed;top:0;right:0;bottom:0;width:min(520px,100%);background:#0a0a12;border-left:1px solid var(--line);z-index:90;overflow-y:auto;padding:calc(env(safe-area-inset-top,0px) + 18px) max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 30px) 18px;animation:slide .25s ease}
+@keyframes slide{from{transform:translateX(40px);opacity:0}}
+.sheet h3{margin:22px 0 10px;font-size:15px;letter-spacing:.12em;color:var(--mut)}
+.sheet .top{display:flex;justify-content:space-between;align-items:center}
+.row{display:grid;grid-template-columns:64px 1fr;gap:12px;border:1px solid var(--line);border-radius:18px;padding:12px;margin-bottom:10px;background:#0e0e17}
+.row .th{width:64px;height:64px;border-radius:12px;overflow:hidden;background:#000}.row .th img,.row .th .art{width:100%;height:100%;object-fit:cover}
+.row .th .emb{width:60%}
+.f{display:grid;gap:8px;min-width:0}
+input,select,textarea{width:100%;background:#13131f;border:1px solid var(--line);color:var(--text);border-radius:12px;padding:9px 12px;font:inherit;font-size:14px;min-width:0}
+input:focus,select:focus,textarea:focus,button:focus-visible,a:focus-visible{outline:2px solid var(--purple);outline-offset:1px}
+textarea{min-height:110px;font-family:ui-monospace,monospace;font-size:12px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.mini{background:#171726;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:6px 11px;font-size:13px;cursor:pointer;font-family:inherit}
+.mini.del{color:#ff7a93}.mini:hover{border-color:var(--purple)}
+.note{font-size:13px;color:var(--mut)}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);transform:translateX(-50%);background:#16162a;border:1px solid var(--purple);padding:10px 20px;border-radius:99px;z-index:100;font-size:14px}
+.reveal{animation:rise .6s cubic-bezier(.2,.7,.2,1) both}
+@media (max-width:760px){.hero{grid-template-columns:1fr}.tabs a{padding:7px 9px;font-size:13px}.adm span{display:none}nav{gap:6px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+
+<nav>
+  <a class="brand" href="#home">NEXORA</a>
+  <div class="tabs"><a href="#home" data-t="home">หน้าแรก</a><a href="#script" data-t="script">สคริปต์</a><a href="#maps" data-t="maps">แมพ</a></div>
+  <button class="adm" id="adm" aria-label="แอดมิน">🛡 <span>แอดมิน</span></button>
+</nav>
+
+<main class="wrap">
+<!-- หน้าแรก -->
+<section id="p-home">
+  <div class="hero">
+    <div>
+      <h1 data-t="สคริปต์เดียว&#10;หลายแมพ"><span class="g">สคริปต์เดียว<br>หลายแมพ</span></h1>
+      <p class="sub">คัดลอกโค้ดบรรทัดเดียว ใช้ได้ทุกแมพที่รองรับ อัปเดตอัตโนมัติ ไม่ต้องคัดลอกใหม่</p>
+      <div class="btns">
+        <a class="btn main" href="#script">รับสคริปต์ →</a>
+        <button class="btn" id="dc">คัดลอกลิงก์ Discord</button>
+        <a class="btn" href="#maps">ดูแมพที่รองรับ</a>
+      </div>
+      <div class="stat"><div><b id="n1">6</b><small>แมพที่รองรับ</small></div><div><b>1</b><small>บรรทัดโค้ด</small></div><div><b>TH·EN</b><small>สองภาษา</small></div></div>
+    </div>
+    <div><canvas class="globe" id="gl" aria-label="โลก 3 มิติ ลากเพื่อหมุน"></canvas><div class="cap"><span>ลากเพื่อหมุนโลก</span><span>จุดแดง = ประเทศไทย</span></div></div>
+  </div>
+  <div class="marq"><div id="marq"></div></div>
+  <p class="eyebrow">ทำไมต้อง NEXORA</p>
+  <h2>เรียบง่าย ชัดเจน อัปเดตเอง</h2>
+  <p class="sub">ทุกอย่างที่ต้องใช้ อยู่ในโค้ดบรรทัดเดียว</p>
+  <div class="why">
+    <div class="box"><div class="ic">⚡</div><h3>ลิงก์เดียว อัปเดตอัตโนมัติ</h3><p>แก้โค้ดบนเซิร์ฟเวอร์เมื่อไหร่ ทุกคนได้เวอร์ชันล่าสุดทันที ไม่ต้องคัดลอกใหม่</p></div>
+    <div class="box"><div class="ic">🎯</div><h3>ตรวจแมพให้เอง</h3><p>สคริปต์เช็ก Place ID แล้วโหลดสคริปต์ของแมพนั้นให้อัตโนมัติ</p></div>
+    <div class="box"><div class="ic">🌐</div><h3>ไทยและ English</h3><p>สลับภาษาเมนูในเกมได้ที่หน้าตั้งค่า</p></div>
+  </div>
+  <p class="eyebrow">วิธีใช้</p>
+  <h2>สามขั้นตอน จบ</h2>
+  <div class="steps">
+    <div><i>01</i><p><b>คัดลอกโค้ด</b><span>ที่หน้ารับสคริปต์ กดปุ่มเดียว</span></p></div>
+    <div><i>02</i><p><b>เข้าเกมที่รองรับ</b><span>ดูรายชื่อที่หน้าแมพ</span></p></div>
+    <div><i>03</i><p><b>วางใน executor แล้วรัน</b><span>เมนูจะขึ้นมาโดยอัตโนมัติ</span></p></div>
+  </div>
+  <p class="eyebrow">แมพที่รองรับ</p>
+  <h2>เล่นแมพไหน ก็ใช้ได้</h2>
+  <p class="sub"></p>
+  <div class="grid" id="list1"></div>
+  <p style="margin-top:18px"><a class="btn sm" href="#maps">ดูแมพทั้งหมด →</a></p>
+</section>
+
+<!-- หน้ารับสคริปต์ -->
+<section id="p-script" hidden>
+  <p class="eyebrow" style="margin-top:0">เริ่มใช้งาน</p>
+  <h1 data-t="รับสคริปต์" style="font-size:clamp(38px,9vw,64px)"><span class="g">รับสคริปต์</span></h1>
+  <p class="sub">คัดลอกโค้ดบรรทัดเดียว แล้ววางใน executor ตอนอยู่ในเกม</p>
+  <div class="term"><header><i></i><i></i><i></i>&nbsp; main.lua</header>
+    <div class="bd"><code id="code"></code><button class="btn main" id="cp" style="width:100%">คัดลอก</button></div></div>
+  <div class="steps">
+    <div><i>01</i><p><b>คัดลอกโค้ด</b><span>กดปุ่มคัดลอกด้านบน</span></p></div>
+    <div><i>02</i><p><b>เข้าเกมที่รองรับ</b><span>ดูรายชื่อที่หน้าแมพ</span></p></div>
+    <div><i>03</i><p><b>วางใน executor แล้วรัน</b><span>รอให้เมนูโหลด</span></p></div>
+  </div>
+</section>
+
+<!-- หน้าแมพ -->
+<section id="p-maps" hidden>
+  <p class="eyebrow" style="margin-top:0">แมพ</p>
+  <h1 data-t="แมพที่รองรับ" style="font-size:clamp(38px,9vw,64px)"><span class="g">แมพที่รองรับ</span></h1>
+  <p class="sub"><span id="n2">6</span> แมพ · <span id="st">ใช้งานได้</span></p>
+  <div class="grid" id="list2"></div>
+</section>
+</main>
+
+<div id="layer"></div>
+
+<script>
+const ADMIN_EMAIL = "aten131012@gmail.com";
+const DEFAULT = {
+  discord: "https://discord.gg/Qdaj957G4",
+  scriptUrl: "https://raw.githubusercontent.com/aten131012-dot/NEXORA-X-MEEN/refs/heads/main/obfuscated_script-1792170648858.lua.txt",
+  maps: [
+    { id: "537413528", name: "Build A Boat For Treasure", img: "", status: "ok" },
+    { id: "142823291", name: "Murder Mystery 2", img: "", status: "ok" },
+    { id: "2753915549", name: "Blox Fruits", img: "", status: "ok" },
+    { id: "124216119978534", name: "Ride a Pet", img: "", status: "ok" },
+    { id: "12355337193", name: "MVS Duels", img: "", status: "ok" },
+    { id: "107778070777162", name: "Cosmic Blue", img: "", status: "ok" }
+  ]
+};
+let cfg = JSON.parse(JSON.stringify(DEFAULT));
+let dbDoc = null, assetsApi = null, isAdmin = false;
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const safeImg = u => /^(https:\/\/|\/_blob\/|data:image\/)/.test(u || "") ? u : "";
+const STAT = { ok: ["ใช้งานได้", ""], up: ["กำลังอัปเดต", "up"], soon: ["เร็วๆ นี้", "soon"] };
+const hue = id => { let h = 0; for (const c of String(id)) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
+const LOADSTRING = () => 'loadstring(game:HttpGet("' + cfg.scriptUrl + '"))()';
+
+function toast(t) { const d = document.createElement("div"); d.className = "toast"; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 2400); }
+async function copyText(text, btn, done) {
+  let ok = true;
+  try { await navigator.clipboard.writeText(text); }
+  catch (e) { try { const t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select(); ok = document.execCommand("copy"); t.remove(); } catch (e2) { ok = false; } }
+  if (btn) { const o = btn.textContent; btn.textContent = ok ? (done || "คัดลอกแล้ว ✓") : "คัดลอกไม่ได้ ลองกดค้างที่โค้ด"; setTimeout(() => btn.textContent = o, 1800); }
+}
+
+/* ---------- ภาพปก ---------- */
+function emblem(id) {
+  const S = p => `<svg viewBox="0 0 120 120" class="emb" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+  const E = {
+    "537413528": S('<path d="M18 70h84l-12 22H32z"/><path d="M60 70V22l30 38H60z"/><path d="M60 22v-8"/><path d="M10 104q12-8 25 0t25 0 25 0 25 0"/>'),
+    "142823291": S('<path d="M30 92L82 24l10 8-52 68z"/><path d="M80 24l16-12 12 12-12 16"/><circle cx="36" cy="96" r="5"/><path d="M60 96h42"/>'),
+    "2753915549": S('<circle cx="60" cy="68" r="32"/><path d="M60 36q-4-18 14-24"/><path d="M60 20q-22-8-30 6 14 4 30-6z"/><path d="M44 62q6 14 22 14"/>'),
+    "124216119978534": S('<ellipse cx="60" cy="78" rx="22" ry="18"/><circle cx="28" cy="52" r="9"/><circle cx="46" cy="36" r="9"/><circle cx="74" cy="36" r="9"/><circle cx="92" cy="52" r="9"/>'),
+    "12355337193": S('<path d="M24 24l56 56"/><path d="M96 24L40 80"/><path d="M72 88l14 14 8-8-14-14"/><path d="M48 88L34 102l-8-8 14-14"/>'),
+    "107778070777162": S('<circle cx="60" cy="60" r="12"/><ellipse cx="60" cy="60" rx="46" ry="18" transform="rotate(-25 60 60)"/><path d="M100 22l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/>')
+  };
+  return E[id] || S('<path d="M60 14l13 30 32 3-24 22 8 32-29-17-29 17 8-32L15 47l32-3z"/>');
+}
+function artHTML(m) { const h = hue(m.id); return `<div class="art" style="--h:${h};--h2:${(h + 60) % 360}">${emblem(m.id)}</div>`; }
+function coverHTML(m) { const u = safeImg(m.img); return u ? `<img src="${esc(u)}" alt="${esc(m.name)}" loading="lazy">` : artHTML(m); }
+
+function cardHTML(m, i) {
+  const [lab, cls] = STAT[m.status] || STAT.ok;
+  return `<article class="mcard" style="--h:${hue(m.id)};animation-delay:${i * 60}ms">
+    <div class="cover" data-id="${esc(m.id)}">${coverHTML(m)}<span class="live ${cls}"><i></i>${lab}</span></div>
+    <div class="info"><b>${esc(m.name)}</b><div class="pid"><small>Place ID</small><button class="chip" data-id="${esc(m.id)}">${esc(m.id)} ⧉</button></div></div></article>`;
+}
+function bindCards(root) {
+  root.querySelectorAll(".chip").forEach(b => b.onclick = () => copyText(b.dataset.id, b, "คัดลอกแล้ว ✓"));
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  root.querySelectorAll(".mcard").forEach(c => {
+    c.addEventListener("pointermove", e => {
+      const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      c.style.setProperty("--mx", x * 100 + "%"); c.style.setProperty("--my", y * 100 + "%");
+      c.style.transform = `perspective(700px) rotateX(${(0.5 - y) * 7}deg) rotateY(${(x - 0.5) * 9}deg)`;
+    });
+    c.addEventListener("pointerleave", () => c.style.transform = "");
+  });
+}
+
+/* ---------- วาดหน้าทั้งหมดจาก cfg ---------- */
+function renderAll() {
+  const list = cfg.maps || [];
+  const html = list.length ? list.map(cardHTML).join("") : '<div class="empty">ยังไม่มีแมพ</div>';
+  ["list1", "list2"].forEach(id => { const el = $("#" + id); el.innerHTML = html; bindCards(el); });
+  $("#n1").textContent = list.length; $("#n2").textContent = list.length;
+  const names = list.map(m => `<span>${esc(m.name)}</span>`).join("");
+  $("#marq").innerHTML = names + names;
+  $("#code").textContent = LOADSTRING();
+  loadThumbs();
+}
+async function loadThumbs() { // ใช้ได้เมื่อเว็บอยู่บนโฮสต์ของคุณเอง
+  const ids = [...document.querySelectorAll("#list2 .cover[data-id]")].filter(c => !c.querySelector("img")).map(c => c.dataset.id);
+  if (!ids.length) return;
+  try {
+    const j = await (await fetch("https://thumbnails.roproxy.com/v1/places/gameicons?placeIds=" + ids.join(",") + "&returnPolicy=PlaceHolder&size=512x512&format=Png&isCircular=false")).json();
+    (j.data || []).forEach(d => {
+      if (!d.imageUrl) return;
+      document.querySelectorAll('.cover[data-id="' + d.targetId + '"]').forEach(c => {
+        const img = new Image(); img.alt = ""; img.onload = () => { const a = c.querySelector(".art"); if (a) a.replaceWith(img); }; img.src = d.imageUrl;
+      });
+    });
+  } catch (e) {}
+}
+
+/* ---------- เปลี่ยนหน้า ---------- */
+function route() {
+  const p = ["home", "script", "maps"].includes(location.hash.slice(1)) ? location.hash.slice(1) : "home";
+  ["home", "script", "maps"].forEach(k => { $("#p-" + k).hidden = k !== p; });
+  document.querySelectorAll(".tabs a").forEach(a => a.classList.toggle("on", a.dataset.t === p));
+  scrollTo(0, 0);
+}
+addEventListener("hashchange", route);
+addEventListener("pointermove", e => { document.body.style.setProperty("--cx", e.clientX + "px"); document.body.style.setProperty("--cy", e.clientY + "px"); });
+$("#dc").onclick = e => copyText(cfg.discord, e.target, "คัดลอกลิงก์ดิสแล้ว ✓");
+$("#cp").onclick = e => copyText(LOADSTRING(), e.target);
+
+/* ---------- โลก 3 มิติ ---------- */
+const LAND = [
+ [[-168,66],[-140,70],[-95,72],[-80,68],[-62,58],[-55,50],[-67,44],[-76,36],[-81,30],[-80,25],[-90,29],[-97,26],[-97,20],[-87,21],[-83,10],[-78,8],[-86,12],[-95,16],[-105,20],[-110,24],[-114,31],[-118,34],[-124,40],[-125,48],[-135,58],[-150,60],[-165,60]],
+ [[-78,8],[-62,10],[-50,0],[-35,-6],[-40,-22],[-48,-27],[-58,-38],[-65,-45],[-68,-54],[-74,-50],[-72,-30],[-70,-18],[-81,-5],[-79,2]],
+ [[-10,36],[-9,43],[-2,48],[5,52],[10,58],[5,62],[15,69],[30,70],[40,65],[40,50],[28,41],[22,36],[12,38],[0,37]],
+ [[-17,21],[-10,35],[10,37],[32,31],[43,12],[51,12],[40,-5],[40,-15],[33,-27],[20,-35],[12,-18],[9,-1],[8,5],[-8,4],[-17,14]],
+ [[40,50],[40,65],[60,70],[100,77],[140,72],[180,68],[160,55],[140,45],[130,35],[122,30],[120,22],[108,18],[106,10],[100,2],[98,15],[92,22],[80,8],[72,20],[68,24],[57,26],[50,30],[44,13],[35,30],[28,41]],
+ [[114,-22],[130,-12],[142,-11],[153,-26],[147,-38],[135,-35],[115,-34]],
+ [[-55,60],[-45,83],[-20,82],[-20,70],[-42,60]]
+];
+function inPoly(lon, lat, p) { let c = false; for (let i = 0, j = p.length - 1; i < p.length; j = i++) { const [xi, yi] = p[i], [xj, yj] = p[j]; if ((yi > lat) !== (yj > lat) && lon < (xj - xi) * (lat - yi) / (yj - yi) + xi) c = !c; } return c; }
+function globe(cv) {
+  const ctx = cv.getContext("2d"), D = Math.min(devicePixelRatio || 1, 2), dots = [];
+  for (let lat = -84; lat <= 84; lat += 4.2) { const n = Math.max(1, Math.round(88 * Math.cos(lat * Math.PI / 180))); for (let k = 0; k < n; k++) { const lon = -180 + (k + .5) * 360 / n; dots.push({ lat, lon, land: LAND.some(p => inPoly(lon, lat, p)) }); } }
+  let rot = -100, tilt = .35, drag = null, vel = .25, W = 0, t = 0;
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const fit = () => { W = cv.clientWidth || 300; cv.width = W * D; cv.height = W * D; };
+  fit(); addEventListener("resize", fit);
+  const proj = (lat, lon) => { const la = lat * Math.PI / 180, lo = (lon + rot) * Math.PI / 180; const x = Math.cos(la) * Math.sin(lo), y = Math.sin(la), z = Math.cos(la) * Math.cos(lo); return [x, y * Math.cos(tilt) - z * Math.sin(tilt), y * Math.sin(tilt) + z * Math.cos(tilt)]; };
+  cv.addEventListener("pointerdown", e => { drag = e.clientX; cv.setPointerCapture(e.pointerId); });
+  cv.addEventListener("pointermove", e => { if (drag !== null) { rot += (e.clientX - drag) * .4; vel = 0; drag = e.clientX; } });
+  const end = () => { drag = null; vel = .25; }; cv.addEventListener("pointerup", end); cv.addEventListener("pointercancel", end);
+  (function frame() {
+    t++; if (!still) rot += vel;
+    if (cv.offsetParent !== null) {
+      if (!W || cv.width !== W * D) fit();
+      const R = W * D * .44, cx = W * D / 2, cy = cx;
+      ctx.clearRect(0, 0, cv.width, cv.height);
+      const g = ctx.createRadialGradient(cx - R * .3, cy - R * .3, R * .1, cx, cy, R); g.addColorStop(0, "#26203a"); g.addColorStop(1, "#08080f");
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.fill(); ctx.strokeStyle = "#9b4dff66"; ctx.lineWidth = 1.5 * D; ctx.stroke();
+      for (const d of dots) { const [x, y, z] = proj(d.lat, d.lon); if (z <= 0) continue; ctx.fillStyle = d.land ? `rgba(255,${120 + z * 100 | 0},${170 + z * 60 | 0},${.35 + z * .6})` : `rgba(180,170,255,${.05 + z * .13})`; ctx.beginPath(); ctx.arc(cx + x * R, cy - y * R, (d.land ? 1.7 : 1) * D * (.6 + z * .5), 0, 7); ctx.fill(); }
+      const [x, y, z] = proj(13.7, 100.5);
+      if (z > 0) { const px = cx + x * R, py = cy - y * R, p = (t % 90) / 90; ctx.strokeStyle = `rgba(255,31,75,${1 - p})`; ctx.lineWidth = 2 * D; ctx.beginPath(); ctx.arc(px, py, (5 + p * 26) * D, 0, 7); ctx.stroke(); ctx.fillStyle = "#ff5c7c"; ctx.shadowColor = "#ff1f4b"; ctx.shadowBlur = 16 * D; ctx.beginPath(); ctx.arc(px, py, 5 * D, 0, 7); ctx.fill(); ctx.shadowBlur = 0; }
+    }
+    requestAnimationFrame(frame);
+  })();
+}
+
+/* ---------- แอดมิน (ตรวจสิทธิ์จริงผ่านบัญชี claude.ai + กฎของฐานข้อมูล) ---------- */
+let draft = null;
+function closeLayer() { $("#layer").innerHTML = ""; }
+function openLayer(inner) { $("#layer").innerHTML = '<div class="shade" id="shade"></div><aside class="sheet" role="dialog" aria-label="แผงแอดมิน">' + inner + '</aside>'; $("#shade").onclick = closeLayer; }
+
+$("#adm").onclick = async () => {
+  openLayer('<div class="top"><b>แอดมิน</b><button class="mini" id="x">ปิด</button></div><p class="note" style="margin-top:14px">กำลังตรวจสิทธิ์...</p>');
+  $("#x").onclick = closeLayer;
+  let me = null;
+  try { const u = await claude.use("user"); if (u) me = await u.me(); } catch (e) {}
+  const ok = !!(me && me.canEdit && (!me.email || me.email.toLowerCase() === ADMIN_EMAIL));
+  if (!ok) {
+    openLayer(`<div class="top"><b>แอดมิน</b><button class="mini" id="x">ปิด</button></div>
+      <div class="box" style="margin-top:18px"><h3>🔒 ไม่มีสิทธิ์เข้าถึง</h3><p>แผงนี้เปิดได้เฉพาะเจ้าของหน้านี้ (บัญชี ${esc(ADMIN_EMAIL)}) ที่ล็อกอิน claude.ai เท่านั้น${me && me.email ? "<br>ตอนนี้ล็อกอินเป็น: " + esc(me.email) : "<br>ยังตรวจบัญชีไม่ได้ (ยังไม่ล็อกอิน หรือเปิดนอก claude.ai)"}</p></div>`);
+    $("#x").onclick = closeLayer; return;
+  }
+  isAdmin = true; draft = JSON.parse(JSON.stringify(cfg)); drawAdmin(me.email);
+};
+
+function drawAdmin(email) {
+  const rows = draft.maps.map((m, i) => `
+    <div class="row" data-i="${i}">
+      <div class="th">${coverHTML(m)}</div>
+      <div class="f">
+        <input data-k="name" value="${esc(m.name)}" aria-label="ชื่อแมพ">
+        <div class="two"><input data-k="id" value="${esc(m.id)}" inputmode="numeric" aria-label="Place ID"><select data-k="status" aria-label="สถานะ">${Object.entries(STAT).map(([k, v]) => `<option value="${k}"${m.status === k ? " selected" : ""}>${v[0]}</option>`).join("")}</select></div>
+        <input data-k="img" value="${esc(m.img)}" placeholder="ลิงก์รูปปก (https://...)" aria-label="ลิงก์รูปปก">
+        <div class="acts">
+          ${assetsApi ? `<label class="mini">อัปโหลดรูปปก<input type="file" accept="image/*" data-up="${i}" hidden></label>` : ""}
+          <button class="mini" data-clr="${i}">ล้างรูปปก</button><button class="mini" data-mv="${i}">ขึ้น ↑</button><button class="mini del" data-del="${i}">ลบแมพ</button>
+        </div>
+      </div></div>`).join("");
+  openLayer(`
+    <div class="top"><b>แอดมิน</b><button class="mini" id="x">ปิด</button></div>
+    <p class="note" style="margin-top:6px">ล็อกอินเป็น ${esc(email || ADMIN_EMAIL)}</p>
+    <h3>แมพ (${draft.maps.length})</h3>${rows || '<div class="empty">ยังไม่มีแมพ</div>'}
+    <h3>เพิ่มแมพ</h3>
+    <div class="two"><input id="nid" placeholder="Place ID" inputmode="numeric"><input id="nname" placeholder="ชื่อแมพ"></div>
+    <div class="acts" style="margin-top:8px"><button class="mini" id="add">+ เพิ่มแมพ</button></div>
+    <h3>นำเข้าแมพจากสคริปต์</h3>
+    <textarea id="lua" placeholder='วางโค้ดสคริปต์ (ไฟล์ NEXORA_MEEN ตัวธรรมดา) ระบบจะหาบรรทัด [placeId] = "url" แล้วเพิ่มแมพที่ยังไม่มี'></textarea>
+    <div class="acts" style="margin-top:8px"><button class="mini" id="imp">นำเข้า</button></div>
+    <h3>ตั้งค่า</h3>
+    <div class="f"><label class="note" for="sdc">ลิงก์ Discord</label><input id="sdc" value="${esc(draft.discord)}"><label class="note" for="ssc">ลิงก์สคริปต์ (loadstring)</label><input id="ssc" value="${esc(draft.scriptUrl)}"></div>
+    <div class="acts" style="margin-top:22px"><button class="btn main" id="save" style="flex:1">บันทึกและเผยแพร่</button><button class="mini" id="rst">คืนค่าเริ่มต้น</button></div>
+    <p class="note" id="msg" style="margin-top:10px"></p>`);
+  const sheet = $(".sheet");
+  const pull = () => { sheet.querySelectorAll(".row").forEach(r => { const m = draft.maps[+r.dataset.i]; r.querySelectorAll("[data-k]").forEach(el => m[el.dataset.k] = el.value.trim()); }); draft.discord = $("#sdc").value.trim(); draft.scriptUrl = $("#ssc").value.trim(); };
+  const redraw = () => { pull(); drawAdmin(email); };
+  $("#x").onclick = closeLayer;
+  sheet.querySelectorAll("[data-del]").forEach(b => b.onclick = () => { pull(); draft.maps.splice(+b.dataset.del, 1); drawAdmin(email); });
+  sheet.querySelectorAll("[data-clr]").forEach(b => b.onclick = () => { pull(); draft.maps[+b.dataset.clr].img = ""; drawAdmin(email); });
+  sheet.querySelectorAll("[data-mv]").forEach(b => b.onclick = () => { pull(); const i = +b.dataset.mv; if (i > 0) { [draft.maps[i - 1], draft.maps[i]] = [draft.maps[i], draft.maps[i - 1]]; } drawAdmin(email); });
+  sheet.querySelectorAll("[data-k=img]").forEach(el => el.onchange = redraw);
+  sheet.querySelectorAll("[data-up]").forEach(el => el.onchange = async () => {
+    const f = el.files[0]; if (!f) return; pull();
+    try { const r = await assetsApi.upload(f); draft.maps[+el.dataset.up].img = r.url; drawAdmin(email); toast("อัปโหลดรูปแล้ว"); }
+    catch (e) { $("#msg").textContent = "อัปโหลดไม่สำเร็จ: " + (e && e.message || "ลองใหม่"); }
+  });
+  $("#add").onclick = () => { pull(); const id = $("#nid").value.replace(/\D/g, ""), name = $("#nname").value.trim(); if (!id) { $("#msg").textContent = "ใส่ Place ID ก่อน"; return; } if (draft.maps.some(m => m.id === id)) { $("#msg").textContent = "มี ID นี้อยู่แล้ว"; return; } draft.maps.push({ id, name: name || "แมพใหม่ " + id, img: "", status: "ok" }); drawAdmin(email); };
+  $("#imp").onclick = () => {
+    pull(); const ids = [...$("#lua").value.matchAll(/\[\s*(\d{5,15})\s*\]\s*=\s*"https?:\/\//g)].map(m => m[1]); let n = 0;
+    ids.forEach(id => { if (!draft.maps.some(m => m.id === id)) { draft.maps.push({ id, name: "แมพใหม่ " + id, img: "", status: "ok" }); n++; } });
+    drawAdmin(email); $("#msg").textContent = ids.length ? `พบ ${ids.length} แมพในสคริปต์ เพิ่มใหม่ ${n} แมพ (แก้ชื่อและรูปปกได้ด้านบน)` : "ไม่พบตาราง games ในข้อความที่วาง";
+  };
+  $("#rst").onclick = () => { if ($("#rst").dataset.sure) { draft = JSON.parse(JSON.stringify(DEFAULT)); drawAdmin(email); } else { $("#rst").dataset.sure = 1; $("#rst").textContent = "กดอีกครั้งเพื่อยืนยัน"; } };
+  $("#save").onclick = async () => {
+    pull(); const bad = draft.maps.find(m => !/^\d{5,15}$/.test(m.id)); if (bad) { $("#msg").textContent = "Place ID ต้องเป็นตัวเลข: " + bad.name; return; }
+    if (!dbDoc) { $("#msg").textContent = "ฐานข้อมูลไม่พร้อม บันทึกไม่ได้"; return; }
+    try { await dbDoc.set({ json: JSON.stringify(draft), updated: Date.now() }); cfg = JSON.parse(JSON.stringify(draft)); renderAll(); closeLayer(); toast("บันทึกและเผยแพร่แล้ว ✓"); }
+    catch (e) { $("#msg").textContent = "บันทึกไม่สำเร็จ: " + (e && (e.message || e.code) || "สิทธิ์ไม่พอ"); }
+  };
+}
+
+/* ---------- เริ่มทำงาน ---------- */
+route(); renderAll(); globe($("#gl"));
+if (!(window.claude && claude.use)) $("#adm").hidden = true; // นอก claude.ai แผงแอดมินใช้ไม่ได้ จึงซ่อน
+(async () => {
+  try {
+    if (!window.claude || !claude.use) return;
+    assetsApi = await claude.use("assets");
+    const db = await claude.use("db");
+    if (!db) return;
+    dbDoc = db.doc("site/config");
+    dbDoc.onSnapshot(s => {
+      if (!s.exists) return;
+      try { const c = JSON.parse(s.data().json); if (c && Array.isArray(c.maps)) { cfg = { discord: c.discord || DEFAULT.discord, scriptUrl: c.scriptUrl || DEFAULT.scriptUrl, maps: c.maps }; renderAll(); } } catch (e) {}
+    }, () => {});
+  } catch (e) {}
+})();
+</script>
+</body></html>
